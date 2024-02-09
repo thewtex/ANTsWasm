@@ -2,7 +2,7 @@ itk_wrap_class("itk::ANTSRegistration" POINTER)
   foreach(d ${ITK_WRAP_IMAGE_DIMS})
     foreach(t ${WRAP_ITK_SCALAR})
       itk_wrap_template("D${ITKM_I${ITKM_${t}}${d}}" "${ITKT_I${ITKM_${t}}${d}}, ${ITKT_I${ITKM_${t}}${d}}, double")
-      # itk_wrap_template("F${ITKM_I${ITKM_${t}}${d}}" "${ITKT_I${ITKM_${t}}${d}}, ${ITKT_I${ITKM_${t}}${d}}, float")  # requires ITK 5.4RC3+
+      itk_wrap_template("F${ITKM_I${ITKM_${t}}${d}}" "${ITKT_I${ITKM_${t}}${d}}, ${ITKT_I${ITKM_${t}}${d}}, float")
     endforeach()
   endforeach()
 itk_end_wrap_class()

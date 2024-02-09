@@ -28,7 +28,7 @@ set(ANTsWasm_INCLUDE_DIRS
 )
 
 if(NOT ITK_SOURCE_DIR)
-  find_package(ITK REQUIRED)
+  find_package(ITK 5.4 REQUIRED)  # we need at least 71c5c83 from 2024-02-02 for debug mode
   list(APPEND CMAKE_MODULE_PATH ${ITK_CMAKE_DIR})
   include(ITKModuleExternal)
 else()

@@ -7,6 +7,8 @@ jobs:
     uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-cxx.yml@d2f5d1894abf01a93cc6581c3b2f17b508170ce3
 
   python-build-workflow:
-    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-package-python.yml@246883ef3828fc00219145aeec9efa67b9889d0b
+    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-package-python.yml@3f63de316255a285b0cac4c819d3d45649738999
+    with:
+      itk-python-package-tag: '8b047b05ee19c01a1744af2b3ee36f7c893ee01eaf2b3ee36f7c893ee01eedf0ebcf8cabd0af66de4f87961'
     secrets:
       pypi_password: ${{ secrets.pypi_password }}

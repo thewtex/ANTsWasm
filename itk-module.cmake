@@ -15,9 +15,11 @@ itk_module(ANTsWasm
     ITKTransformFactory
     ITKIOTransformBase
     ITKImageGrid
+    ITKDisplacementField
   TEST_DEPENDS
     ITKTestKernel
     ITKMetaIO
+    ITKIONRRD
     ITKIONIFTI
     ITKIOTransformHDF5
     ITKIOTransformMatlab

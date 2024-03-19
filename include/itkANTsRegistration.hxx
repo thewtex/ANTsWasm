@@ -52,26 +52,26 @@ ANTsRegistration<TFixedImage, TMovingImage, TParametersValueType>::PrintSelf(std
 {
   using namespace print_helper;
   Superclass::PrintSelf(os, indent);
-  os << indent << "TypeOfTransform: " << this->m_TypeOfTransform << std::endl;
-  os << indent << "AffineMetric: " << this->m_AffineMetric << std::endl;
-  os << indent << "SynMetric: " << this->m_SynMetric << std::endl;
+  os << indent << "TypeOfTransform: " << this->m_TypeOfTransform << '\n';
+  os << indent << "AffineMetric: " << this->m_AffineMetric << '\n';
+  os << indent << "SynMetric: " << this->m_SynMetric << '\n';
 
-  os << indent << "GradientStep: " << this->m_GradientStep << std::endl;
-  os << indent << "FlowSigma: " << this->m_FlowSigma << std::endl;
-  os << indent << "TotalSigma: " << this->m_TotalSigma << std::endl;
-  os << indent << "SamplingRate: " << this->m_SamplingRate << std::endl;
-  os << indent << "NumberOfBins: " << this->m_NumberOfBins << std::endl;
-  os << indent << "RandomSeed: " << this->m_RandomSeed << std::endl;
-  os << indent << "SmoothingInPhysicalUnits: " << (this->m_SmoothingInPhysicalUnits ? "On" : "Off") << std::endl;
-  os << indent << "UseGradientFilter: " << (this->m_UseGradientFilter ? "On" : "Off") << std::endl;
-  os << indent << "Radius: " << this->m_Radius << std::endl;
-  os << indent << "CollapseCompositeTransform: " << (this->m_CollapseCompositeTransform ? "On" : "Off") << std::endl;
-  os << indent << "MaskAllStages: " << (this->m_MaskAllStages ? "On" : "Off") << std::endl;
+  os << indent << "GradientStep: " << this->m_GradientStep << '\n';
+  os << indent << "FlowSigma: " << this->m_FlowSigma << '\n';
+  os << indent << "TotalSigma: " << this->m_TotalSigma << '\n';
+  os << indent << "SamplingRate: " << this->m_SamplingRate << '\n';
+  os << indent << "NumberOfBins: " << this->m_NumberOfBins << '\n';
+  os << indent << "RandomSeed: " << this->m_RandomSeed << '\n';
+  os << indent << "SmoothingInPhysicalUnits: " << (this->m_SmoothingInPhysicalUnits ? "On" : "Off") << '\n';
+  os << indent << "UseGradientFilter: " << (this->m_UseGradientFilter ? "On" : "Off") << '\n';
+  os << indent << "Radius: " << this->m_Radius << '\n';
+  os << indent << "CollapseCompositeTransform: " << (this->m_CollapseCompositeTransform ? "On" : "Off") << '\n';
+  os << indent << "MaskAllStages: " << (this->m_MaskAllStages ? "On" : "Off") << '\n';
 
-  os << indent << "SynIterations: " << this->m_SynIterations << std::endl;
-  os << indent << "AffineIterations: " << this->m_AffineIterations << std::endl;
-  os << indent << "ShrinkFactors: " << this->m_ShrinkFactors << std::endl;
-  os << indent << "SmoothingSigmas: " << this->m_SmoothingSigmas << std::endl;
+  os << indent << "SynIterations: " << this->m_SynIterations << '\n';
+  os << indent << "AffineIterations: " << this->m_AffineIterations << '\n';
+  os << indent << "ShrinkFactors: " << this->m_ShrinkFactors << '\n';
+  os << indent << "SmoothingSigmas: " << this->m_SmoothingSigmas << '\n';
 
   os << indent << "RestrictTransformation: " << this->m_RestrictTransformation << std::endl;
 
@@ -346,9 +346,20 @@ ANTsRegistration<TFixedImage, TMovingImage, TParametersValueType>::SingleStageRe
         m_Helper->AddBSplineTransform(m_GradientStep, meshSizeAtBaseLevel);
         affineType = false;
       }
+      break;
+      // BSplineSyN is not available in ANTsPy, but is used in faces example
+      case RegistrationHelperType::BSplineSyN: {
+        unsigned int splineOrder = 3;
+        std::vector<unsigned int> meshSizeForTheUpdateField =
+          m_Helper->CalculateMeshSizeForSpecifiedKnotSpacing(fixedImage, 75, splineOrder); // TODO: expose grid spacing?
+        std::vector<unsigned int> meshSizeForTheTotalField(ImageDimension, 0);
+        m_Helper->AddBSplineSyNTransform(
+          m_GradientStep, meshSizeForTheUpdateField, meshSizeForTheTotalField, splineOrder);
+        affineType = false;
+      }
+      break;
       // These are not available in ANTsPy, so we don't support them either
       case RegistrationHelperType::BSplineDisplacementField:
-      case RegistrationHelperType::BSplineSyN:
       case RegistrationHelperType::TimeVaryingBSplineVelocityField:
       case RegistrationHelperType::Exponential:
       case RegistrationHelperType::BSplineExponential:
@@ -475,8 +486,9 @@ ANTsRegistration<TFixedImage, TMovingImage, TParametersValueType>::GenerateData(
 
   this->UpdateProgress(0.01);
 
-  const InitialTransformType *          initialTransform = nullptr;
-  const DecoratedInitialTransformType * decoratedInitialTransform = this->GetInitialTransformInput();
+  typename CompositeTransformType::Pointer emptyComposite = CompositeTransformType::New();
+  const InitialTransformType *             initialTransform = emptyComposite;
+  const DecoratedInitialTransformType *    decoratedInitialTransform = this->GetInitialTransformInput();
   if (decoratedInitialTransform != nullptr)
   {
     initialTransform = decoratedInitialTransform->Get();

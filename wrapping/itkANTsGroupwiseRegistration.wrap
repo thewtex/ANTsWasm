@@ -1,0 +1,19 @@
+# Needed for passing a list of images via a setter, see commit message here:
+# https://github.com/InsightSoftwareConsortium/ITK/pull/526/commits/d6354b9d06457b740d8497595572c908461b5c1c
+set(import_text "%include ${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/python/itkImage_ext.i\n")
+string(FIND ${ITK_WRAP_PYTHON_SWIG_EXT} ${import_text} pos)
+if(${pos} EQUAL -1)
+  string(PREPEND ITK_WRAP_PYTHON_SWIG_EXT "${import_text}")
+endif()
+unset(import_text)
+# the rest of the file is normal wrapping specification
+
+itk_wrap_class("itk::ANTsGroupwiseRegistration" POINTER)
+  foreach(d ${ITK_WRAP_IMAGE_DIMS})
+    foreach(t ${WRAP_ITK_SCALAR})
+      itk_wrap_template("F${ITKM_I${ITKM_${t}}${d}}" "${ITKT_I${ITKM_${t}}${d}}, ${ITKT_I${ITKM_F}${d}}, float")
+      itk_wrap_template("D${ITKM_I${ITKM_${t}}${d}}" "${ITKT_I${ITKM_${t}}${d}}, ${ITKT_I${ITKM_F}${d}}, double")
+    endforeach()
+  endforeach()
+itk_end_wrap_class()
+

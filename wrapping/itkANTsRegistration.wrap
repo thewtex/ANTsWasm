@@ -1,8 +1,22 @@
+set(scalars_except_float ${WRAP_ITK_SCALAR})
+list(FIND scalars_except_float "F" pos)
+if(NOT ${pos} EQUAL -1)
+  list(REMOVE_AT scalars_except_float ${pos})
+endif()
+
 itk_wrap_class("itk::ANTsRegistration" POINTER)
   foreach(d ${ITK_WRAP_IMAGE_DIMS})
-    foreach(t ${WRAP_ITK_SCALAR})
+    foreach(t ${scalars_except_float})
       itk_wrap_template("D${ITKM_I${ITKM_${t}}${d}}" "${ITKT_I${ITKM_${t}}${d}}, ${ITKT_I${ITKM_${t}}${d}}, double")
-      # itk_wrap_template("F${ITKM_I${ITKM_${t}}${d}}" "${ITKT_I${ITKM_${t}}${d}}, ${ITKT_I${ITKM_${t}}${d}}, float")  # requires ITK 5.4RC3+
+      itk_wrap_template("F${ITKM_I${ITKM_${t}}${d}}" "${ITKT_I${ITKM_${t}}${d}}, ${ITKT_I${ITKM_${t}}${d}}, float")  # requires ITK 5.4RC3+
     endforeach()
+
+    # float is the default output type in groupwise registration, so pair all types with it
+    foreach(t ${WRAP_ITK_SCALAR})
+      itk_wrap_template("D${ITKM_I${ITKM_F}${d}}${ITKM_I${ITKM_${t}}${d}}"
+        "${ITKT_I${ITKM_F}${d}}, ${ITKT_I${ITKM_${t}}${d}}, double")
+      itk_wrap_template("F${ITKM_I${ITKM_F}${d}}${ITKM_I${ITKM_${t}}${d}}"
+        "${ITKT_I${ITKM_F}${d}}, ${ITKT_I${ITKM_${t}}${d}}, float")
+    endforeach()   
   endforeach()
 itk_end_wrap_class()
